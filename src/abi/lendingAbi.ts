@@ -82,26 +82,57 @@ export default [
       {
         indexed: true,
         internalType: "address",
-        name: "user",
+        name: "token",
         type: "address",
       },
       {
         indexed: false,
         internalType: "uint256",
-        name: "totalDebtUSD",
+        name: "newIndex",
+        type: "uint256",
+      },
+    ],
+    name: "InterestAccrued",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "address",
+        name: "liquidator",
+        type: "address",
+      },
+      {
+        indexed: true,
+        internalType: "address",
+        name: "user",
+        type: "address",
+      },
+      {
+        indexed: true,
+        internalType: "address",
+        name: "collateralToken",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "collateralAmount",
         type: "uint256",
       },
       {
         indexed: false,
-        internalType: "address[]",
-        name: "tokens",
-        type: "address[]",
+        internalType: "address",
+        name: "debtToken",
+        type: "address",
       },
       {
         indexed: false,
-        internalType: "uint256[]",
-        name: "amounts",
-        type: "uint256[]",
+        internalType: "uint256",
+        name: "debtRepaid",
+        type: "uint256",
       },
     ],
     name: "Liquidated",
@@ -260,12 +291,51 @@ export default [
   },
   {
     inputs: [],
-    name: "CDT_WBNB_PAIR",
+    name: "CDT_WETH_PAIR",
     outputs: [
       {
         internalType: "address",
         name: "",
         type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "INTEREST_RATE_BASE",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "INTEREST_RATE_SLOPE",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "LIQUIDATION_BONUS",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
       },
     ],
     stateMutability: "view",
@@ -299,12 +369,25 @@ export default [
   },
   {
     inputs: [],
-    name: "NATIVE_BNB",
+    name: "NATIVE_ETH",
     outputs: [
       {
         internalType: "address",
         name: "",
         type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "SECONDS_PER_YEAR",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
       },
     ],
     stateMutability: "view",
@@ -351,7 +434,7 @@ export default [
   },
   {
     inputs: [],
-    name: "WBNB_USDT_PAIR",
+    name: "WBNB_WETH_PAIR",
     outputs: [
       {
         internalType: "address",
@@ -401,7 +484,7 @@ export default [
         type: "uint256",
       },
     ],
-    name: "_addToken",
+    name: "addToken",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -469,6 +552,25 @@ export default [
       },
     ],
     name: "getBorrowCapacity",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "token",
+        type: "address",
+      },
+    ],
+    name: "getCurrentBorrowRate",
     outputs: [
       {
         internalType: "uint256",
@@ -556,10 +658,106 @@ export default [
         name: "user",
         type: "address",
       },
+      {
+        internalType: "address",
+        name: "token",
+        type: "address",
+      },
+    ],
+    name: "getUserDebtAmount",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "token",
+        type: "address",
+      },
+    ],
+    name: "getUtilizationRate",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    name: "globalInterestIndex",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    name: "lastInterestUpdate",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "user",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "debtToken",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "debtAmount",
+        type: "uint256",
+      },
+      {
+        internalType: "address",
+        name: "collateralToken",
+        type: "address",
+      },
     ],
     name: "liquidate",
     outputs: [],
-    stateMutability: "nonpayable",
+    stateMutability: "payable",
     type: "function",
   },
   {
@@ -754,7 +952,17 @@ export default [
     outputs: [
       {
         internalType: "uint256",
-        name: "",
+        name: "principal",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "interestIndex",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "lastUpdateTime",
         type: "uint256",
       },
     ],

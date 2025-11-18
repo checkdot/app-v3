@@ -77,7 +77,7 @@ export const SUPPORTED_CHAINS = [
     name: "Ethereum",
     icon: "/assets/ETH.png",
     cdt: "0xCdB37A4fBC2Da5b78aA4E41a432792f9533e85Cc",
-    lending: "0xd4EE99b9d9a3B8aD71963759F3B182EE343dE40D",
+    lending: "0x24Ac62148a38eb4bEa9570629f80FfdcF08a059e",
     precision: 6,
   },
   {
@@ -85,7 +85,7 @@ export const SUPPORTED_CHAINS = [
     name: "Binance Smart Chain",
     icon: "/assets/BSC.png",
     cdt: "0x0cBD6fAdcF8096cC9A43d90B45F65826102e3eCE",
-    lending: "0x1421eD46F89b0b8b610CCe3224e9A4b25a9822D4",
+    lending: "0x0C39c8d851D8C5a0B25f319d42523dbf33A5df36",
     precision: 18,
   },
   // {

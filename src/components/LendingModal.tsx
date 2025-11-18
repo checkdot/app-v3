@@ -77,9 +77,11 @@ const LendingModal: React.FC<LendingModalProps> = ({
       )
     } else if (activeTab === "Withdraw") {
       const maxWithdrawable =
-        (((totalCollateral ?? 0n) - ((totalBorrowed ?? 0n) * 100n) / 80n) *
+        (((((totalCollateral ?? 0n) - ((totalBorrowed ?? 0n) * 100n) / 80n) *
           BigInt(1e18)) /
-        (prices?.[symbol] ?? 0n)
+          (prices?.[symbol] ?? 0n)) *
+          100n) /
+        BigInt((asset?.weight ?? 0) * 100)
       setAmount(
         formatUnits(min(maxWithdrawable, deposits?.[symbol] ?? 0n), decimals)
       )

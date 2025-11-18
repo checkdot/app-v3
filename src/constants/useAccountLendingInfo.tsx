@@ -71,7 +71,8 @@ const useAccountLendingInfo = () => {
       select: (data) => {
         let borrows: Record<string, bigint> = {}
         SUPPORTED_ASSETS.forEach((asset, index) => {
-          borrows[asset.symbol] = (data?.[index]?.result ?? 0n) as bigint
+          borrows[asset.symbol] = ((data?.[index]?.result as any)?.[0] ??
+            0n) as bigint
         })
         return borrows
       },
