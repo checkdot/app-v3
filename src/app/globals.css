@@ -1,0 +1,40 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+body {
+  font-family:
+    Nunito Sans,
+    -apple-system,
+    BlinkMacSystemFont,
+    Segoe UI,
+    Roboto,
+    Helvetica Neue,
+    Arial,
+    Noto Sans,
+    sans-serif,
+    Apple Color Emoji,
+    Segoe UI Emoji,
+    Segoe UI Symbol;
+  line-height: 1.5;
+  font-weight: 600;
+
+  background: #f8f9fd;
+  color: #000;
+}
+
+.dark body {
+  background: #10101a;
+  color: #fff;
+}
+
+* {
+  scrollbar-color: #33f693 #080811;
+  scrollbar-width: thin;
+}
+
+::-webkit-inner-spin-button,
+::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
