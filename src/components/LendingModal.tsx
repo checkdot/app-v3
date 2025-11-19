@@ -62,7 +62,11 @@ const LendingModal: React.FC<LendingModalProps> = ({
 
   const { totalBorrowed, totalCollateral, deposits, borrows } =
     useAccountLendingInfo()
-  const { reserves } = useTotalLendingInfo()
+  const { reserves, utilizations, borrowRates } = useTotalLendingInfo()
+
+  const borrowRate = borrowRates?.[symbol] ?? 0n
+  const depositRate =
+    (borrowRate * (utilizations?.[symbol] ?? 0n)) / BigInt(1e18)
 
   const onMax = () => {
     if (activeTab === "Deposit") {
@@ -391,6 +395,26 @@ const LendingModal: React.FC<LendingModalProps> = ({
             <div className="flex items-center justify-between text-sm mt-1">
               <span>Weight</span>
               <span>{asset?.weight}</span>
+            </div>
+            <div className="flex items-center justify-between text-sm mt-1">
+              <span>
+                {activeTab === "Deposit" || activeTab === "Withdraw"
+                  ? "Deposit APR"
+                  : "Borrow APR"}
+              </span>
+              <span>
+                {(
+                  Number(
+                    formatUnits(
+                      activeTab === "Deposit" || activeTab === "Withdraw"
+                        ? depositRate
+                        : borrowRate,
+                      18
+                    )
+                  ) * 100
+                ).toFixed(2)}
+                %
+              </span>
             </div>
             <div className="flex items-center justify-between text-sm mt-1">
               <span>Borrow Limit</span>

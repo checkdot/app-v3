@@ -67,7 +67,47 @@ const useTotalLendingInfo = () => {
     },
   })
 
-  return { reserves, deposits, borrows }
+  const { data: utilizations } = useReadContracts({
+    contracts: SUPPORTED_ASSETS.map((asset) => ({
+      address: chain?.lending as `0x${string}`,
+      abi: lendingAbi,
+      functionName: "getUtilizationRate",
+      args: [asset.addresses[chainId] as `0x${string}`],
+    })),
+    query: {
+      select: (data) => {
+        let utilizations: Record<string, bigint> = {}
+        SUPPORTED_ASSETS.forEach((asset, index) => {
+          utilizations[asset.symbol] = (data?.[index]?.result ?? 0n) as bigint
+        })
+        return utilizations
+      },
+      enabled: !!chainId,
+      refetchInterval: 12000,
+    },
+  })
+
+  const { data: borrowRates } = useReadContracts({
+    contracts: SUPPORTED_ASSETS.map((asset) => ({
+      address: chain?.lending as `0x${string}`,
+      abi: lendingAbi,
+      functionName: "getCurrentBorrowRate",
+      args: [asset.addresses[chainId] as `0x${string}`],
+    })),
+    query: {
+      select: (data) => {
+        let borrowRates: Record<string, bigint> = {}
+        SUPPORTED_ASSETS.forEach((asset, index) => {
+          borrowRates[asset.symbol] = (data?.[index]?.result ?? 0n) as bigint
+        })
+        return borrowRates
+      },
+      enabled: !!chainId,
+      refetchInterval: 12000,
+    },
+  })
+
+  return { reserves, deposits, borrows, utilizations, borrowRates }
 }
 
 export default useTotalLendingInfo
