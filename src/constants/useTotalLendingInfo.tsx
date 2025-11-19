@@ -23,7 +23,7 @@ const useTotalLendingInfo = () => {
         return reserves
       },
       enabled: !!chainId,
-      refetchInterval: 1000,
+      refetchInterval: 12000,
     },
   })
 
@@ -43,7 +43,7 @@ const useTotalLendingInfo = () => {
         return deposits
       },
       enabled: !!chainId,
-      refetchInterval: 1000,
+      refetchInterval: 12000,
     },
   })
 
@@ -63,7 +63,7 @@ const useTotalLendingInfo = () => {
         return borrows
       },
       enabled: !!chainId,
-      refetchInterval: 1000,
+      refetchInterval: 12000,
     },
   })
 

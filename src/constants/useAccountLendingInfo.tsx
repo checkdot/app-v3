@@ -19,7 +19,7 @@ const useAccountLendingInfo = () => {
     args: [address as `0x${string}`],
     query: {
       enabled: !!address && !!chainId,
-      refetchInterval: 1000,
+      refetchInterval: 12000,
     },
   })
 
@@ -30,7 +30,7 @@ const useAccountLendingInfo = () => {
     args: [address as `0x${string}`],
     query: {
       enabled: !!address && !!chainId,
-      refetchInterval: 1000,
+      refetchInterval: 12000,
     },
   })
 
@@ -53,7 +53,7 @@ const useAccountLendingInfo = () => {
         return collateral
       },
       enabled: !!address && !!chainId,
-      refetchInterval: 1000,
+      refetchInterval: 12000,
     },
   })
 
@@ -77,7 +77,7 @@ const useAccountLendingInfo = () => {
         return borrows
       },
       enabled: !!address && !!chainId,
-      refetchInterval: 1000,
+      refetchInterval: 12000,
     },
   })
 
