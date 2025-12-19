@@ -1,15 +1,15 @@
-"use client"
+"use client";
 
-import { useQuery } from "@tanstack/react-query"
-import React, { useRef } from "react"
+import { useQuery } from "@tanstack/react-query";
+import React, { useRef } from "react";
 
 interface CurrencyInputGroupProps {
-  value: string
-  symbol: string
-  price: number
-  setValue: (e: string) => void
-  className?: string
-  onMax?: () => void
+  value: string;
+  symbol: string;
+  price: number;
+  setValue: (e: string) => void;
+  className?: string;
+  onMax?: () => void;
 }
 
 const CurrencyInputGroup: React.FC<CurrencyInputGroupProps> = ({
@@ -20,17 +20,28 @@ const CurrencyInputGroup: React.FC<CurrencyInputGroupProps> = ({
   className,
   onMax,
 }) => {
-  const symbolRef = useRef<HTMLDivElement>(null)
+  const symbolRef = useRef<HTMLDivElement>(null);
 
   const { data: paddingRight } = useQuery({
     queryKey: ["input-padding", symbol],
     queryFn: () => {
       if (symbolRef.current) {
-        return symbolRef.current.offsetWidth + 20
+        return symbolRef.current.offsetWidth + 20;
       }
-      return 80
+      return 80;
     },
-  })
+  });
+
+  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let newValue = e.target.value;
+    
+    // Remove leading zeros, but preserve "0" and "0."
+    if (newValue !== "0" && !newValue.startsWith("0.")) {
+      newValue = newValue.replace(/^0+(?=\d)/, '');
+    }
+    
+    setValue(newValue);
+  };
 
   return (
     <div className={`relative w-full ${className ?? ""}`}>
@@ -49,7 +60,7 @@ const CurrencyInputGroup: React.FC<CurrencyInputGroupProps> = ({
         className="flex w-full rounded-xl border transition-all duration-150 file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 relative z-0 border-[#d0d7df] dark:border-[#1f3a55] bg-transparent pt-2 pb-8 text-right text-2xl text-black dark:text-white h-20"
         style={{ paddingLeft: "84px", paddingRight: `${paddingRight || 80}px` }}
         value={value}
-        onChange={(e) => setValue(e.target.value)}
+        onChange={onChange}
         step="any"
       />
       <div
@@ -68,7 +79,7 @@ const CurrencyInputGroup: React.FC<CurrencyInputGroupProps> = ({
         </p>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default CurrencyInputGroup
+export default CurrencyInputGroup;

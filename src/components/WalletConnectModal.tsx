@@ -20,6 +20,7 @@ const WalletConnectModal: React.FC<WalletConnectModalProps> = ({
 
   const onConnect = (connector: Connector) => {
     connectAsync({ connector })
+    onClose()
   }
 
   return (
