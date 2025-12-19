@@ -59,7 +59,7 @@ const ChainSwitchModal: React.FC<ChainSwitchModalProps> = ({
                   alt={chain.name}
                   width={24}
                   height={24}
-                  className="size-5"
+                  className="size-5 rounded-full"
                 />
               </div>
             ))}

@@ -3,97 +3,116 @@
 import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react"
 import React, { useState } from "react"
 import CurrencyInputGroup from "./CurrencyInputGroup"
-import {
-  useAccount,
-  useBalance,
-  useChainId,
-  usePublicClient,
-  useWalletClient,
-} from "wagmi"
-import { SUPPORTED_ASSETS, SUPPORTED_CHAINS } from "@/constants"
+import { useAccount, useChainId, usePublicClient, useWalletClient } from "wagmi"
+import { SUPPORTED_CHAINS } from "@/constants"
 import { erc20Abi, formatUnits, parseUnits, zeroAddress } from "viem"
 import { formatNumberUnit, min } from "@/utils"
-import useAccountLendingInfo from "@/constants/useAccountLendingInfo"
+import useAccountLendingInfo from "@/hooks/useAccountLendingInfo"
 import usePrices from "@/hooks/usePrices"
-import useTotalLendingInfo from "@/constants/useTotalLendingInfo"
+import useTotalLendingInfo from "@/hooks/useTotalLendingInfo"
 import lendingAbi from "@/abi/lendingAbi"
 import toast from "react-hot-toast"
+import { useQuery } from "@tanstack/react-query"
 
 interface LendingModalProps {
-  symbol: string
+  token: `0x${string}`
   open: boolean
+  tab: "Deposit" | "Borrow" | "Withdraw" | "Repay"
   onClose: () => void
 }
 
 const LendingModal: React.FC<LendingModalProps> = ({
-  symbol,
+  token,
   open,
+  tab,
   onClose,
 }) => {
   const chainId = useChainId()
-  const [activeTab, setActiveTab] = useState("Deposit")
+  const [activeTab, setActiveTab] = useState(tab)
   const [amount, setAmount] = useState("0")
   const { address } = useAccount()
   const publicClient = usePublicClient()
   const { data: walletClient } = useWalletClient()
   const [loading, setLoading] = useState(false)
 
-  const asset = SUPPORTED_ASSETS.find((asset) => asset.symbol === symbol)
-  const chain = SUPPORTED_CHAINS.find((chain) => chain.id === chainId)
-  const decimals = asset?.decimals?.[chainId] ?? 18
-  const pricePrecision =
-    18 - ((asset?.decimals?.[chainId] ?? 18) - (chain?.precision ?? 18))
+  const { reserves, utilizations, borrowRates, decimals, symbols, weights } =
+    useTotalLendingInfo()
+  const { totalBorrowed, totalCollateral, deposits, borrows, balances } =
+    useAccountLendingInfo()
+  const prices = usePrices()
 
-  const { data: balance } = useBalance({
-    address: address as `0x${string}`,
-    token:
-      asset?.addresses[chainId] === zeroAddress
-        ? undefined
-        : (asset?.addresses[chainId] as `0x${string}`),
-    chainId: chainId,
-    query: {
-      enabled: !!address && !!asset?.addresses[chainId] && !!open,
-      refetchInterval: 1000,
+  const chain = SUPPORTED_CHAINS.find((chain) => chain.id === chainId)
+  const tokenDecimals = decimals?.[token.toLowerCase() as `0x${string}`] ?? 18
+  const pricePrecision = 18 - (tokenDecimals - (chain?.precision ?? 18))
+
+  const price = Number(
+    formatUnits(
+      prices?.[token.toLowerCase() as `0x${string}`] ?? 0n,
+      pricePrecision
+    )
+  )
+
+  const balance = balances?.[token.toLowerCase() as `0x${string}`] ?? 0n
+  const borrowRate = borrowRates?.[token.toLowerCase() as `0x${string}`] ?? 0n
+  const depositRate =
+    (borrowRate *
+      (utilizations?.[token.toLowerCase() as `0x${string}`] ?? 0n)) /
+    BigInt(1e18)
+
+  useQuery({
+    queryKey: ["modal-tab", tab],
+    queryFn: () => {
+      setActiveTab(tab)
+      return tab
     },
   })
 
-  const prices = usePrices()
-  const price = Number(formatUnits(prices?.[symbol] ?? 0n, pricePrecision))
-
-  const { totalBorrowed, totalCollateral, deposits, borrows } =
-    useAccountLendingInfo()
-  const { reserves, utilizations, borrowRates } = useTotalLendingInfo()
-
-  const borrowRate = borrowRates?.[symbol] ?? 0n
-  const depositRate =
-    (borrowRate * (utilizations?.[symbol] ?? 0n)) / BigInt(1e18)
+  useQuery({
+    queryKey: ["modal-open", open],
+    queryFn: () => {
+      setAmount("0")
+      return open
+    },
+  })
 
   const onMax = () => {
     if (activeTab === "Deposit") {
-      setAmount(formatUnits(balance?.value ?? 0n, balance?.decimals ?? 18))
+      setAmount(formatUnits(balance, tokenDecimals))
     } else if (activeTab === "Borrow") {
       const maxBorrowable =
         ((((totalCollateral ?? 0n) * 80n) / 100n - (totalBorrowed ?? 0n)) *
           BigInt(1e18)) /
-        (prices?.[symbol] ?? 0n)
+        (prices?.[token.toLowerCase() as `0x${string}`] ?? 0n)
       setAmount(
-        formatUnits(min(maxBorrowable, reserves?.[symbol] ?? 0n), decimals)
+        formatUnits(
+          min(
+            maxBorrowable,
+            reserves?.[token.toLowerCase() as `0x${string}`] ?? 0n
+          ),
+          tokenDecimals
+        )
       )
     } else if (activeTab === "Withdraw") {
       const maxWithdrawable =
         (((((totalCollateral ?? 0n) - ((totalBorrowed ?? 0n) * 100n) / 80n) *
           100n) /
-          BigInt((asset?.weight ?? 0) * 100)) *
+          BigInt(weights?.[token.toLowerCase() as `0x${string}`] ?? 0)) *
           BigInt(1e18)) /
-        (prices?.[symbol] ?? 0n)
+        (prices?.[token.toLowerCase() as `0x${string}`] ?? 0n)
       setAmount(
-        formatUnits(min(maxWithdrawable, deposits?.[symbol] ?? 0n), decimals)
+        formatUnits(
+          min(
+            maxWithdrawable,
+            deposits?.[token.toLowerCase() as `0x${string}`] ?? 0n
+          ),
+          tokenDecimals
+        )
       )
     } else if (activeTab === "Repay") {
       setAmount(
         formatUnits(
-          min(borrows?.[symbol] ?? 0n, balance?.value ?? 0n),
-          decimals
+          min(borrows?.[token.toLowerCase() as `0x${string}`] ?? 0n, balance),
+          tokenDecimals
         )
       )
     }
@@ -102,8 +121,7 @@ const LendingModal: React.FC<LendingModalProps> = ({
   const onDeposit = async () => {
     if (!address || !walletClient || !publicClient) return
     try {
-      const token = asset?.addresses[chainId] as `0x${string}`
-      const parsedAmount = parseUnits(amount, decimals)
+      const parsedAmount = parseUnits(amount, tokenDecimals)
       setLoading(true)
       if (token === zeroAddress) {
         const { request: withdrawRequest } =
@@ -174,8 +192,7 @@ const LendingModal: React.FC<LendingModalProps> = ({
   const onBorrow = async () => {
     if (!address || !walletClient || !publicClient) return
     try {
-      const token = asset?.addresses[chainId] as `0x${string}`
-      const parsedAmount = parseUnits(amount, decimals)
+      const parsedAmount = parseUnits(amount, tokenDecimals)
       setLoading(true)
       const { request: borrowRequest } = await publicClient.simulateContract({
         account: address as `0x${string}`,
@@ -207,8 +224,7 @@ const LendingModal: React.FC<LendingModalProps> = ({
   const onWithdraw = async () => {
     if (!address || !walletClient || !publicClient) return
     try {
-      const token = asset?.addresses[chainId] as `0x${string}`
-      const parsedAmount = parseUnits(amount, decimals)
+      const parsedAmount = parseUnits(amount, tokenDecimals)
       setLoading(true)
       const { request: withdrawRequest } = await publicClient.simulateContract({
         account: address as `0x${string}`,
@@ -240,8 +256,7 @@ const LendingModal: React.FC<LendingModalProps> = ({
   const onRepay = async () => {
     if (!address || !walletClient || !publicClient) return
     try {
-      const token = asset?.addresses[chainId] as `0x${string}`
-      const parsedAmount = parseUnits(amount, decimals)
+      const parsedAmount = parseUnits(amount, tokenDecimals)
       setLoading(true)
       if (token === zeroAddress) {
         const { request: repayRequest } = await publicClient.simulateContract({
@@ -334,14 +349,14 @@ const LendingModal: React.FC<LendingModalProps> = ({
             className="flex flex-col w-full max-w-md h-[540px] rounded-xl bg-[#eee] dark:bg-[#10101a] p-4 backdrop-blur-2xl duration-300 ease-out data-closed:transform-[scale(95%)] data-closed:opacity-0"
           >
             <div className="flex items-center justify-between p-1.5 space-x-1.5 rounded-xl border border-[#1f3a55]">
-              {["Deposit", "Borrow", "Withdraw", "Repay"].map((tab) => (
+              {["Deposit", "Borrow", "Withdraw", "Repay"].map((item: any) => (
                 <button
-                  key={tab}
-                  data-active={activeTab === tab}
+                  key={item}
+                  data-active={activeTab === item}
                   className="w-full cursor-pointer py-1 text-[#0f59d1] dark:text-[#eee] data-[active=true]:bg-[#0f59d1] data-[active=true]:text-[#eee] dark:data-[active=true]:bg-[#eee] dark:data-[active=true]:text-[#10101a] rounded-lg"
-                  onClick={() => setActiveTab(tab)}
+                  onClick={() => setActiveTab(item)}
                 >
-                  {tab}
+                  {item}
                 </button>
               ))}
             </div>
@@ -349,7 +364,7 @@ const LendingModal: React.FC<LendingModalProps> = ({
               onMax={onMax}
               value={amount}
               setValue={setAmount}
-              symbol={symbol}
+              symbol={symbols?.[token.toLowerCase() as `0x${string}`] ?? ""}
               price={price ?? 0}
               className="mt-4"
             />
@@ -357,11 +372,9 @@ const LendingModal: React.FC<LendingModalProps> = ({
               <span className="text-sm">
                 Balance{" "}
                 {formatNumberUnit(
-                  Number(
-                    formatUnits(balance?.value ?? 0n, balance?.decimals ?? 18)
-                  )
+                  Number(formatUnits(balance ?? 0n, tokenDecimals))
                 )}{" "}
-                {symbol}
+                {symbols?.[token.toLowerCase() as `0x${string}`] ?? ""}
               </span>
               <span className="text-sm">
                 {activeTab === "Deposit" || activeTab === "Withdraw"
@@ -372,13 +385,15 @@ const LendingModal: React.FC<LendingModalProps> = ({
                   Number(
                     formatUnits(
                       activeTab === "Deposit" || activeTab === "Withdraw"
-                        ? (deposits?.[symbol] ?? 0n)
-                        : (borrows?.[symbol] ?? 0n),
-                      decimals
+                        ? (deposits?.[token.toLowerCase() as `0x${string}`] ??
+                            0n)
+                        : (borrows?.[token.toLowerCase() as `0x${string}`] ??
+                            0n),
+                      tokenDecimals
                     )
                   )
                 )}{" "}
-                {symbol}
+                {symbols?.[token.toLowerCase() as `0x${string}`] ?? ""}
               </span>
             </div>
             <div className="w-full border-b-2 border-b-[#d0d7df] dark:border-[#1f3a55] my-4" />
@@ -394,7 +409,9 @@ const LendingModal: React.FC<LendingModalProps> = ({
             </div>
             <div className="flex items-center justify-between text-sm mt-1">
               <span>Weight</span>
-              <span>{asset?.weight}</span>
+              <span>
+                {(weights?.[token.toLowerCase() as `0x${string}`] ?? 0) / 100}
+              </span>
             </div>
             <div className="flex items-center justify-between text-sm mt-1">
               <span>
@@ -421,7 +438,7 @@ const LendingModal: React.FC<LendingModalProps> = ({
               <span>
                 $
                 {formatNumberUnit(
-                  Number(formatUnits(totalCollateral ?? 0n, decimals))
+                  Number(formatUnits(totalCollateral ?? 0n, tokenDecimals))
                 )}
               </span>
             </div>
@@ -430,7 +447,7 @@ const LendingModal: React.FC<LendingModalProps> = ({
               <span>
                 $
                 {formatNumberUnit(
-                  Number(formatUnits(totalBorrowed ?? 0n, decimals))
+                  Number(formatUnits(totalBorrowed ?? 0n, tokenDecimals))
                 )}
               </span>
             </div>

@@ -47,6 +47,12 @@ export default [
         name: "amount",
         type: "uint256",
       },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "nonce",
+        type: "uint256",
+      },
     ],
     name: "Borrowed",
     type: "event",
@@ -70,6 +76,12 @@ export default [
         indexed: false,
         internalType: "uint256",
         name: "amount",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "nonce",
         type: "uint256",
       },
     ],
@@ -132,6 +144,12 @@ export default [
         indexed: false,
         internalType: "uint256",
         name: "debtRepaid",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "nonce",
         type: "uint256",
       },
     ],
@@ -228,6 +246,12 @@ export default [
         name: "amount",
         type: "uint256",
       },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "nonce",
+        type: "uint256",
+      },
     ],
     name: "Repaid",
     type: "event",
@@ -246,6 +270,18 @@ export default [
         internalType: "uint256",
         name: "weight",
         type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "address",
+        name: "pair",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "bool",
+        name: "isV2Pair",
+        type: "bool",
       },
     ],
     name: "TokenAdded",
@@ -272,35 +308,15 @@ export default [
         name: "amount",
         type: "uint256",
       },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "nonce",
+        type: "uint256",
+      },
     ],
     name: "Withdrawn",
     type: "event",
-  },
-  {
-    inputs: [],
-    name: "CDT",
-    outputs: [
-      {
-        internalType: "address",
-        name: "",
-        type: "address",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "CDT_WETH_PAIR",
-    outputs: [
-      {
-        internalType: "address",
-        name: "",
-        type: "address",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
   },
   {
     inputs: [],
@@ -369,19 +385,6 @@ export default [
   },
   {
     inputs: [],
-    name: "NATIVE_ETH",
-    outputs: [
-      {
-        internalType: "address",
-        name: "",
-        type: "address",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
     name: "SECONDS_PER_YEAR",
     outputs: [
       {
@@ -395,77 +398,12 @@ export default [
   },
   {
     inputs: [],
-    name: "USDC",
+    name: "TIME_ELAPSE_INTERVAL",
     outputs: [
       {
-        internalType: "address",
+        internalType: "uint256",
         name: "",
-        type: "address",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "USDT",
-    outputs: [
-      {
-        internalType: "address",
-        name: "",
-        type: "address",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "WBNB",
-    outputs: [
-      {
-        internalType: "address",
-        name: "",
-        type: "address",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "WBNB_WETH_PAIR",
-    outputs: [
-      {
-        internalType: "address",
-        name: "",
-        type: "address",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "WETH",
-    outputs: [
-      {
-        internalType: "address",
-        name: "",
-        type: "address",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "WETH_USDT_PAIR",
-    outputs: [
-      {
-        internalType: "address",
-        name: "",
-        type: "address",
+        type: "uint256",
       },
     ],
     stateMutability: "view",
@@ -482,6 +420,21 @@ export default [
         internalType: "uint256",
         name: "weight",
         type: "uint256",
+      },
+      {
+        internalType: "address",
+        name: "pair",
+        type: "address",
+      },
+      {
+        internalType: "bool",
+        name: "isV2Pair",
+        type: "bool",
+      },
+      {
+        internalType: "address",
+        name: "pairToken",
+        type: "address",
       },
     ],
     name: "addToken",
@@ -714,6 +667,19 @@ export default [
     type: "function",
   },
   {
+    inputs: [],
+    name: "lastEventNonce",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [
       {
         internalType: "address",
@@ -855,6 +821,21 @@ export default [
         internalType: "bool",
         name: "isActive",
         type: "bool",
+      },
+      {
+        internalType: "address",
+        name: "pair",
+        type: "address",
+      },
+      {
+        internalType: "bool",
+        name: "isV2Pair",
+        type: "bool",
+      },
+      {
+        internalType: "address",
+        name: "pairToken",
+        type: "address",
       },
     ],
     stateMutability: "view",

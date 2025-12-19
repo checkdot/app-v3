@@ -1,29 +1,31 @@
 import lendingAbi from "@/abi/lendingAbi"
-import { SUPPORTED_ASSETS, SUPPORTED_CHAINS } from "@/constants"
-import { formatUnits } from "viem"
+import { SUPPORTED_CHAINS } from "@/constants"
 import { useChainId, useReadContracts } from "wagmi"
+import useTotalLendingInfo from "./useTotalLendingInfo"
 
 const usePrices = () => {
   const chainId = useChainId()
+  const { supportedTokens } = useTotalLendingInfo()
 
   const chain = SUPPORTED_CHAINS.find((chain) => chain.id === chainId)
 
   const { data } = useReadContracts({
-    contracts: SUPPORTED_ASSETS.map((asset) => ({
+    contracts: supportedTokens?.map((token) => ({
       address: chain?.lending as `0x${string}`,
       abi: lendingAbi,
       functionName: "getTokenPrice",
-      args: [asset.addresses[chainId] as `0x${string}`],
+      args: [token],
     })),
     query: {
       select: (data) => {
-        let prices: Record<string, bigint> = {}
-        SUPPORTED_ASSETS.forEach((asset, index) => {
-          prices[asset.symbol] = (data?.[index]?.result ?? 0n) as bigint
+        let prices: Record<`0x${string}`, bigint> = {}
+        supportedTokens?.forEach((token, index) => {
+          prices[token.toLowerCase() as `0x${string}`] = (data?.[index]
+            ?.result ?? 0n) as bigint
         })
         return prices
       },
-      enabled: !!chainId,
+      enabled: !!chainId && !!supportedTokens,
     },
   })
 

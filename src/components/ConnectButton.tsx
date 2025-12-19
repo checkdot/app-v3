@@ -50,7 +50,7 @@ const ConnectButton = () => {
               alt={chain?.name ?? ""}
               width={24}
               height={24}
-              className="size-[18px]"
+              className="size-[18px] rounded-full"
             />
             <span className="max-sm:hidden ml-2">{chain?.name}</span>
           </button>

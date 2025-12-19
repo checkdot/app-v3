@@ -5,14 +5,13 @@ import {
   fallback,
   http,
   unstable_connector,
-  injected as injectedTransport,
 } from "wagmi"
 import { bsc, mainnet } from "wagmi/chains"
 import { baseAccount, injected, walletConnect } from "wagmi/connectors"
 
 export function getConfig() {
   return createConfig({
-    chains: [mainnet, bsc],
+    chains: [bsc, mainnet],
     connectors: [
       injected(),
       baseAccount(),
@@ -23,8 +22,14 @@ export function getConfig() {
     }),
     ssr: true,
     transports: {
-      [mainnet.id]: fallback([unstable_connector(injectedTransport), http()]),
-      [bsc.id]: fallback([unstable_connector(injectedTransport), http()]),
+      [mainnet.id]: fallback([
+        unstable_connector(injected),
+        http("https://ethereum-rpc.publicnode.com"),
+      ]),
+      [bsc.id]: fallback([
+        unstable_connector(injected),
+        http("https://bsc-rpc.publicnode.com"),
+      ]),
     },
     batch: {
       [mainnet.id]: { multicall: { batchSize: 100 } },

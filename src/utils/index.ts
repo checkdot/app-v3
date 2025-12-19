@@ -1,3 +1,6 @@
+import { SUPPORTED_CHAINS } from "@/constants"
+import { zeroAddress } from "viem"
+
 export function formatNumberUnit(num: number, decimals: number = 2): string {
   const units = [
     { value: 1_000_000_000_000, symbol: "T" },
@@ -38,4 +41,11 @@ export function max(a: bigint, b: bigint): bigint {
 
 export function min(a: bigint, b: bigint): bigint {
   return a < b ? a : b
+}
+
+export function getTokenImage(chainId: number, token: `0x${string}`): string {
+  if (token === zeroAddress) {
+    return `https://cdn.sushi.com/image/upload/f_auto,c_limit,w_200/native-currency/${SUPPORTED_CHAINS.find((chain) => chain.id === chainId)?.logo}.svg`
+  }
+  return `https://cdn.sushi.com/image/upload/f_auto,c_limit,w_200/tokens/${chainId}/${token}.jpg`
 }
