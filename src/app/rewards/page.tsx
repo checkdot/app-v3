@@ -1,4 +1,4 @@
-import RewardList from "@/components/RewardList"
+import RewardList from "@/components/Rewards/RewardList";
 
 const RewardsPage = () => {
   return (
@@ -11,7 +11,7 @@ const RewardsPage = () => {
       </div>
       <RewardList />
     </div>
-  )
-}
+  );
+};
 
-export default RewardsPage
+export default RewardsPage;

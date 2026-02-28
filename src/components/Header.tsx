@@ -1,16 +1,17 @@
-"use client"
+"use client";
 
-import Image from "next/image"
-import Link from "next/link"
-import ConnectButton from "./ConnectButton"
-import ThemeSwitchButton from "./ThemeSwitchButton"
-import { usePathname } from "next/navigation"
-import Pool from "./svgs/Pool"
-import Reward from "./svgs/Reward"
-import Question from "./svgs/Question"
+import Image from "next/image";
+import Link from "next/link";
+import ConnectButton from "./ConnectButton";
+import ThemeSwitchButton from "./ThemeSwitchButton";
+import { usePathname } from "next/navigation";
+import Pool from "./svgs/Pool";
+import Reward from "./svgs/Reward";
+import Question from "./svgs/Question";
+import Info from "./svgs/Info";
 
 const Header = () => {
-  const pathname = usePathname()
+  const pathname = usePathname();
 
   return (
     <header className="absolute top-0 left-0 right-0 bg-white dark:bg-[#18171c] border-b border-b-[#afafaf7a] dark:border-b-[#d2d2d212] flex items-center justify-between h-14 py-1 px-4">
@@ -53,6 +54,16 @@ const Header = () => {
             </span>
           </Link>
           <Link
+            href={"/info"}
+            data-active={pathname === "/info"}
+            className="max-md:flex max-md:flex-col max-md:items-center max-md:justify-center max-md:text-[10px] max-md:w-[21.2766%] text-[#6b7c93] md:font-bold p-2 md:rounded-2xl hover:bg-[#eee]/40 dark:data-[active=true]:text-[#33f693] sm:max-md:data-[active=true]:bg-[#00000029] dark:sm:max-md:data-[active=true]:bg-[#10101a] dark:sm:max-md:data-[active=true]:brightness-[2.5]"
+          >
+            <Info className="md:hidden size-6 max-md:mb-0.5" />
+            <span className="dark:sm:max-md:text-white max-sm:text-[#6b7c93]">
+              Info
+            </span>
+          </Link>
+          <Link
             href={"/faq"}
             data-active={pathname === "/faq"}
             className="max-md:flex max-md:flex-col max-md:items-center max-md:justify-center max-md:text-[10px] max-md:w-[21.2766%] text-[#6b7c93] md:font-bold p-2 md:rounded-2xl hover:bg-[#eee]/40 dark:data-[active=true]:text-[#33f693] sm:max-md:data-[active=true]:bg-[#00000029] dark:sm:max-md:data-[active=true]:bg-[#10101a] dark:sm:max-md:data-[active=true]:brightness-[2.5]"
@@ -69,7 +80,7 @@ const Header = () => {
         <ThemeSwitchButton />
       </div>
     </header>
-  )
-}
+  );
+};
 
-export default Header
+export default Header;

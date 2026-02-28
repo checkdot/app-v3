@@ -1,4 +1,4 @@
-import AddAssetForm from "@/components/AddAssetForm"
+import AddAssetForm from "@/components/AddAsset/AddAssetForm"
 
 const AddAssetPage = () => {
   return (

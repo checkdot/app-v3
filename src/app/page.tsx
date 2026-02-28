@@ -1,6 +1,6 @@
 "use client"
 
-import LendingAssetsList from "@/components/LendingAssetsList"
+import LendingAssetsList from "@/components/Pools/LendingAssetsList"
 
 function App() {
   return (

@@ -2,7 +2,7 @@
 
 import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react"
 import React, { useState } from "react"
-import CurrencyInputGroup from "./CurrencyInputGroup"
+import CurrencyInputGroup from "../CurrencyInputGroup"
 import { useAccount, useChainId, usePublicClient, useWalletClient } from "wagmi"
 import { SUPPORTED_CHAINS } from "@/constants"
 import { erc20Abi, formatUnits, parseUnits, zeroAddress } from "viem"

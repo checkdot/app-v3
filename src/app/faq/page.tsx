@@ -1,54 +1,54 @@
-"use client"
+"use client";
 
-import FAQItem from "@/components/FAQItem"
-import { FAQ_DATA } from "@/constants"
-import { useEffect, useState } from "react"
+import FAQItem from "@/components/FAQ/FAQItem";
+import { FAQ_DATA } from "@/constants";
+import { useEffect, useState } from "react";
 
 const FAQPage = () => {
-  const [activeCategory, setActiveCategory] = useState<string>("General")
+  const [activeCategory, setActiveCategory] = useState<string>("General");
 
   const scrollToCategory = (category: string) => {
     const element = document.getElementById(
       `category-${category.toLowerCase().replace(/\s+/g, "-")}`
-    )
+    );
     if (element) {
-      const offset = 100 // Offset for header
-      const elementPosition = element.getBoundingClientRect().top
-      const offsetPosition = elementPosition + window.pageYOffset - offset
+      const offset = 100; // Offset for header
+      const elementPosition = element.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - offset;
 
       window.scrollTo({
         top: offsetPosition,
         behavior: "smooth",
-      })
-      setActiveCategory(category)
+      });
+      setActiveCategory(category);
     }
-  }
+  };
 
   useEffect(() => {
     const handleScroll = () => {
       const categories = FAQ_DATA.map((cat) => ({
         id: `category-${cat.category.toLowerCase().replace(/\s+/g, "-")}`,
         category: cat.category,
-      }))
+      }));
 
       for (let i = categories.length - 1; i >= 0; i--) {
-        const element = document.getElementById(categories[i].id)
+        const element = document.getElementById(categories[i].id);
         if (element) {
-          const rect = element.getBoundingClientRect()
+          const rect = element.getBoundingClientRect();
           if (rect.top <= 150) {
-            setActiveCategory(categories[i].category)
-            break
+            setActiveCategory(categories[i].category);
+            break;
           }
         }
       }
-    }
+    };
 
     // Set initial active category
-    handleScroll()
+    handleScroll();
 
-    window.addEventListener("scroll", handleScroll)
-    return () => window.removeEventListener("scroll", handleScroll)
-  }, [])
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
     <div className="mt-20">
@@ -103,7 +103,7 @@ const FAQPage = () => {
         </aside>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default FAQPage
+export default FAQPage;

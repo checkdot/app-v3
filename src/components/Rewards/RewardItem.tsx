@@ -100,7 +100,7 @@ const RewardItem: React.FC<RewardItemProps> = ({
             href="/pools"
             className="text-sm border text-[#0f59d1] dark:text-[#eee] border-[#d0d7df] dark:border-[#eee] hover:bg-[#0f59d1] dark:hover:bg-[#eee] bg-[#f8f9fd] dark:bg-transparent hover:text-[#eee] dark:hover:text-[#10101a] transition-all duration-150 cursor-pointer py-1.5 px-2 sm:px-3"
           >
-            Deosit
+            Deposit
           </Link>
         </div>
         <div className="flex max-md:flex-col items-center justify-between w-full mt-5">

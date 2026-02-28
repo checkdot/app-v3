@@ -1,27 +1,29 @@
-import LendingModal from "./LendingModal"
-import { useState } from "react"
-import { SUPPORTED_CHAINS } from "@/constants"
-import { formatNumberUnit } from "@/utils"
-import usePrices from "@/hooks/usePrices"
-import useTotalLendingInfo from "@/hooks/useTotalLendingInfo"
-import { formatUnits, zeroAddress } from "viem"
-import { useChainId } from "wagmi"
-import DepositsPanel from "./DepositsPanel"
-import DepositAssetsPanel from "./DepositAssetsPanel"
-import BorrowsPanel from "./BorrowsPanel"
-import BorrowAssetsPanel from "./BorrowAssetsPanel"
+import LendingModal from "./LendingModal";
+import { useState } from "react";
+import { SUPPORTED_CHAINS } from "@/constants";
+import { formatNumberUnit } from "@/utils";
+import usePrices from "@/hooks/usePrices";
+import useTotalLendingInfo from "@/hooks/useTotalLendingInfo";
+import { formatUnits, zeroAddress } from "viem";
+import { useChainId } from "wagmi";
+import DepositsPanel from "./DepositsPanel";
+import DepositAssetsPanel from "./DepositAssetsPanel";
+import BorrowsPanel from "./BorrowsPanel";
+import BorrowAssetsPanel from "./BorrowAssetsPanel";
 
 const LendingAssetsList = () => {
-  const [selectedAsset, setSelectedAsset] = useState<`0x${string}` | null>(null)
+  const [selectedAsset, setSelectedAsset] = useState<`0x${string}` | null>(
+    null
+  );
   const [selectedTab, setSelectedTab] = useState<
     "Deposit" | "Borrow" | "Withdraw" | "Repay"
-  >("Deposit")
-  const chainId = useChainId()
+  >("Deposit");
+  const chainId = useChainId();
 
-  const chain = SUPPORTED_CHAINS.find((chain) => chain.id === chainId)
-  const prices = usePrices()
+  const chain = SUPPORTED_CHAINS.find((chain) => chain.id === chainId);
+  const prices = usePrices();
   const { reserves, deposits, borrows, supportedTokens, decimals } =
-    useTotalLendingInfo()
+    useTotalLendingInfo();
 
   const statements = [
     {
@@ -109,14 +111,14 @@ const LendingAssetsList = () => {
         )
       )}`,
     },
-  ]
+  ];
 
   const onSelectTab = (tab: "Deposit" | "Borrow" | "Withdraw" | "Repay") => {
     return (token: `0x${string}`) => {
-      setSelectedTab(tab)
-      setSelectedAsset(token.toLowerCase() as `0x${string}`)
-    }
-  }
+      setSelectedTab(tab);
+      setSelectedAsset(token.toLowerCase() as `0x${string}`);
+    };
+  };
 
   return (
     <>
@@ -157,7 +159,7 @@ const LendingAssetsList = () => {
         onClose={() => setSelectedAsset(null)}
       />
     </>
-  )
-}
+  );
+};
 
-export default LendingAssetsList
+export default LendingAssetsList;
